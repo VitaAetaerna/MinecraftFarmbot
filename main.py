@@ -3,7 +3,7 @@ import sys
 import tkinter as tk 
 import time
 
-def Stop(event):
+def Stop():
     sys.exit()
 
 def start_mouse():
@@ -20,8 +20,8 @@ def start_walking(lengthofline):
         if State == 0:
             endTime = datetime.datetime.now() + datetime.timedelta(seconds=lengthofline)
             print(endTime)
+            print(endTime - datetime.datetime.now())
             while datetime.datetime.now() < endTime and  "Minecraft" in GetWindowText(GetForegroundWindow()):
-                print(endTime - datetime.datetime.now())
                 print("W + A")
                 pyautogui.keyDown('w')
                 pyautogui.keyDown('a')
@@ -29,7 +29,7 @@ def start_walking(lengthofline):
                 if not "Minecraft" in GetWindowText(GetForegroundWindow()):
                     print("Waiting 30 secs")
                     endTime +=  datetime.timedelta(seconds=30)
-                    threadingBot.sleep(30)
+                    time.sleep(30)
 
                 if datetime.datetime.now() >= endTime:
                     pyautogui.keyUp('w')
@@ -39,8 +39,9 @@ def start_walking(lengthofline):
         if State == 1:
             endTime = datetime.datetime.now() + datetime.timedelta(seconds=lengthofline)
             print(endTime)
+            print(endTime - datetime.datetime.now())
+
             while datetime.datetime.now() < endTime and  "Minecraft" in GetWindowText(GetForegroundWindow()):
-                print(endTime - datetime.datetime.now())
                 print("W + D")
                 pyautogui.keyDown('w')
                 pyautogui.keyDown('d')
@@ -48,7 +49,7 @@ def start_walking(lengthofline):
                 if not "Minecraft" in GetWindowText(GetForegroundWindow()):
                     print("Waiting 30 secs")
                     endTime +=  datetime.timedelta(seconds=30)
-                    threadingBot.sleep(30)
+                    time.sleep(30)
 
                 if datetime.datetime.now() >= endTime:
                     pyautogui.keyUp('w')
@@ -57,6 +58,8 @@ def start_walking(lengthofline):
 
 def bot(lengthofline):
     print("Waiting 5 seconds and then starting so prepare your Minecraft...")
+    threading_walkbot = threading.Thread(start_walking(lengthofline))
+    threading_mouse = threading.Thread(start_mouse())
     threading_mouse.start()
     threading_walkbot.start(lengthofline)
 
@@ -68,19 +71,18 @@ def createGUI():
 
     # Create Tkinter instance 
     window = tk.Tk()
-    window.title("Farmer's helper ;)")
-    window.geometry("300x300")
-    global lengthofline
+    window.title("Farmer's helper ;) ")
+    window.geometry("100x100")
     lengthofline = tk.IntVar()
-    lof = tk.Entry(window, lengthofline)
-
+    lof = tk.Entry(window, textvariable=lengthofline)
+    lof.pack()
+    lengthofline = int(lengthofline.get())
 
     Startbutton = tk.Button(window, text="Start Bot", command=lambda : bot(lengthofline=lengthofline))
     Startbutton.pack()
 
-    StopBot = tk.Button(text="Stop Bot")
-    StopBot.bind("", Stop)
-
+    Stopbutton = tk.Button(window, text="Stop Bot", command=lambda : Stop())
+    Stopbutton.pack()
     window.mainloop()
 
 
@@ -100,6 +102,4 @@ if __name__ == "__main__":
         os.system("python {}".format(__file__))
     
 
-    threading_walkbot = threading.Thread(start_walking(lengthofline))
-    threading_mouse = threading.Thread(start_mouse())
     createGUI()
